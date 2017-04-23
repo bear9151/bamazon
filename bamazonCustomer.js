@@ -17,21 +17,43 @@ connection.connect(function(err) {
     if (err) throw err;
     console.log("Connected as ID# " + connection.threadId);
     console.log(chalk.bold.bgYellow("Welcome to Bamazon."));
-    console.log("Where you can find everything from B to Z. (Good Luck with the A's.)");
-    showProducts();
+    console.log(chalk.dim("Where you can find everything from B to Z. (Good Luck with the A's.)"));
+    frontDoor();
 });
 
-function showProducts() {
+function frontDoor() {
     inquirer.prompt({
-        name: "showProducts",
+        name: "frontDoor",
         type: "confirm",
         message: "Would you like to see what's for sale?"
     }).then(function(answer) {
-        if (answer.showProducts === true) {
-            console.log("products table");
+        if (answer.frontDoor === true) {
+            showProducts();
         } else {
             console.log("Ok, Goodbye!");
+            connection.end();
             process.exit();
         }
     })
 }
+
+function showProducts() {
+    connection.query("SELECT * FROM products", function(err, res) {
+        if (err) throw err;
+        for (var i = 0; i < res.length; i++) {
+            console.log(chalk.bold(res[i].item_id) + "  " + res[i].product_name + " " + chalk.bgGreen(res[i].price.toFixed(2)));
+        };
+    });
+    inquirer.prompt({
+        name: "purchase",
+        type: "confirm",
+        message: "Would you like to make a purchase?"
+    }).then(function(answer) {
+        if (answer.purchase === true) {
+            console.log("time to purchse");
+        } else {
+            frontDoor();
+        }
+    });
+}
+
