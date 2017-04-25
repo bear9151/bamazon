@@ -1,1 +1,1 @@
-# bamazon
+# Welcome to Bamazon
